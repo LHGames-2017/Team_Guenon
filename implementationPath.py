@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Sample code from http://www.redblobgames.com/pathfinding/
 # Copyright 2014 Red Blob Games <redblobgames@gmail.com>
 #
@@ -75,7 +76,8 @@ class SquareGrid:
 
 class GridWithWeights(SquareGrid):
     def __init__(self, width, height):
-        super().__init__(width, height)
+        SquareGrid.__init__(self, width, height)
+        # super().__init__(width, height)
         self.weights = {}
     
     def cost(self, from_node, to_node):

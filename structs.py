@@ -1,7 +1,9 @@
 import math
+import json
 
 class ActionTypes():
-    DefaultAction, MoveAction, AttackAction, CollectAction, UpgradeAction, StealAction, PurchaseAction = range(7)
+    DefaultAction, MoveAction, AttackAction, CollectAction, UpgradeAction, StealAction, PurchaseAction, HealAction = \
+        range(8)
 
 
 class UpgradeType():
@@ -15,6 +17,9 @@ class TileType():
 class TileContent():
     Empty, Wall, House, Lava, Resource, Shop, Player = range(7)
 
+
+class PurchasableItem():
+    MicrosoftSword, UbisoftShield, DevolutionBackpack, DevolutionPickaxe, HealthPotion = range(5)
 
 class Point(object):
 
@@ -34,7 +39,8 @@ class Point(object):
         return "{{{0}, {1}}}".format(self.X, self.Y)
 
     # Distance between two Points
-    def Distance(self, p1, p2):
+    @staticmethod
+    def Distance(p1, p2):
         delta_x = p1.X - p2.X
         delta_y = p1.Y - p2.Y
         return math.sqrt(math.pow(delta_x, 2) + math.pow(delta_y, 2))
@@ -46,7 +52,7 @@ class GameInfo(object):
         self.__dict__ = json_dict
         self.HouseLocation = Point(json_dict["HouseLocation"])
         self.Map = None
-        self.Players = dict()
+        self.OtherPlayers = dict()
 
 
 class Tile(object):
