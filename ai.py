@@ -2,7 +2,9 @@ from flask import Flask, request
 from structs import *
 import json
 import numpy
+from helper import *
 
+overwritte = True
 app = Flask(__name__)
 
 def create_action(action_type, target):
@@ -58,6 +60,7 @@ def bot():
 
     encoded_map = map_json.encode()
     map_json = json.loads(encoded_map)
+    # print(json.dumps(map_json, indent=3, sort_keys=True))
     p = map_json["Player"]
     pos = p["Position"]
     x = pos["X"]
@@ -70,6 +73,10 @@ def bot():
     # Map
     serialized_map = map_json["CustomSerializedMap"]
     deserialized_map = deserialize_map(serialized_map)
+
+    global overwritte
+    WriteMap(deserialized_map, overwritte)
+    overwritte = False
 
     otherPlayers = []
 
@@ -94,4 +101,4 @@ def reponse():
     return bot()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
+    app.run(host="0.0.0.0", port=8080)
