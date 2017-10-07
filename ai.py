@@ -78,7 +78,7 @@ def bot():
     encoded_map = map_json.encode()
     map_json = json.loads(encoded_map)
     # test = json.dumps(map_json, indent=3, sort_keys=True)
-    # print(json.dumps(map_json, indent=3, sort_keys=True))
+    print(json.dumps(map_json, indent=3, sort_keys=True))
     p = map_json["Player"]
     pos = p["Position"]
     x = pos["X"]
@@ -122,7 +122,7 @@ def bot():
 
     path = GetAstarPath((x,y), (x-5,y+5), mapContent)
     # return decision
-    return create_move_action(Point(x,y-1))
+    return create_move_action(Point(path[1][0], path[1][1]))
 
 @app.route("/", methods=["POST"])
 def reponse():

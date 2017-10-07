@@ -126,7 +126,7 @@ def reconstruct_path(came_from, start, goal):
     while current != start:
         current = came_from[current]
         path.append(current)
-    path.append(start) # optional
+    # path.append(start) # optional
     path.reverse() # optional
     return path
 
