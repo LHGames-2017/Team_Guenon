@@ -1,0 +1,14 @@
+.vscode/
+/frank/.vscode/*
+
+frank/\.idea/frank\.iml
+
+frank/\.idea/inspectionProfiles/profiles_settings\.xml
+
+frank/\.idea/misc\.xml
+
+frank/\.idea/modules\.xml
+
+frank/\.idea/preferred-vcs\.xml
+
+frank/\.idea/workspace\.xml
