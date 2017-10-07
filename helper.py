@@ -10,21 +10,21 @@ def WriteMap(deserialized_map, overwritte):
         for y in range(0, sizeY - 1):
             content = deserialized_map[x][y].Content
             if content == 0:
-                tab[(x,y)] = '_'
+                tab[(x, y)] = '_'
             elif content == 1:
-                tab[(x,y)] = '$'
+                tab[(x, y)] = '$'
             elif content == 2:
-                tab[(x,y)] = 'M'
+                tab[(x, y)] = 'M'
             elif content == 3:
-                tab[(x,y)] = 'P'
+                tab[(x, y)] = 'P'
             elif content == 4:
-                tab[(x,y)] = 'W'
+                tab[(x, y)] = 'W'
             elif content == 5:
-                tab[(x,y)] = 'L'
+                tab[(x, y)] = 'L'
             elif content == 6:
-                tab[(x,y)] = 'S'
+                tab[(x, y)] = 'S'
             else:
-                tab[(x,y)] = 'X'                
+                tab[(x, y)] = 'X'
     
     if overwritte: open("test" + "Out.txt", "w")
     with open("test" + "Out.txt", "a") as f:
@@ -38,3 +38,4 @@ def WriteMap(deserialized_map, overwritte):
             print()
             f.write('\n')
             f.write('\n')
+
