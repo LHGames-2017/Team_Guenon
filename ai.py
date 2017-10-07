@@ -7,7 +7,7 @@ from PoiChooser import *
 
 cash = 0
 states = ['Home', 'moving', 'mining']
-global current_state = "Home"
+current_state = "Home"
 
 # upgrade_priority = {'Backpack': 2000, 'pick-up-speed-1': 15000, 'Defence-1': 15000, 'MaximumHealth-1': 15000,
 #                     'Pick-axe': 40000, 'Shield': 40000, 'Defence-2': 50000, 'CarryingCapacity-1': 15000,
