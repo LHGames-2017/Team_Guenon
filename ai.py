@@ -4,6 +4,15 @@ import json
 import numpy
 from helper import *
 from algoMap import *
+from PoiChooser import *
+
+cash = 0
+states = ['Home', 'moving', 'mining']
+current_state = "Home"
+
+# upgrade_priority = {'Backpack': 2000, 'pick-up-speed-1': 15000, 'Defence-1': 15000, 'MaximumHealth-1': 15000,
+#                     'Pick-axe': 40000, 'Shield': 40000, 'Defence-2': 50000, 'CarryingCapacity-1': 15000,
+#                     'CarryingCapacity-2': 50000}
 
 overwritte = True
 app = Flask(__name__)
@@ -18,8 +27,13 @@ def create_move_action(target):
 def create_attack_action(target):
     return create_action("AttackAction", target)
 
-def create_collect_action(target):
-    return create_action("CollectAction", target)
+def create_collect_action(target, carryingCapacity, carriedResources):
+    if carryingCapacity == carriedResources :
+        current_state = 'Home'
+        return
+    else:
+        current_state = 'Mining'
+        return create_action("CollectAction", target)
 
 def create_steal_action(target):
     return create_action("StealAction", target)
@@ -50,6 +64,8 @@ def deserialize_map(serialized_map):
             deserialized_map[i][j] = Tile(content, x, y)
 
     return deserialized_map
+
+poiChooser = PoiChooser()
 
 def bot():
     """
@@ -90,6 +106,16 @@ def bot():
 
     #         otherPlayers.append({player_name: player_info })
 
+    deserialized_map = poiChooser.deserialize_data(serialized_map, player, map_json["OtherPlayers"]) #deserialize_map(serialized_map)
+
+    if current_state == 'Home' or current_state == 'Moving':
+        target = player.Position #TODO = WANTED POSITION
+        create_move_action(target)
+    elif current_state == 'Mining':
+        create_collect_action(player.Position, player.CarryingCapacity, player.CarriedRessources)
+
+    otherPlayers = []
+    
     global overwritte
     mapContent = WriteMap(deserialized_map, overwritte)
     overwritte = False

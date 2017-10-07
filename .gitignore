@@ -12,3 +12,10 @@ frank/\.idea/modules\.xml
 frank/\.idea/preferred-vcs\.xml
 
 frank/\.idea/workspace\.xml
+<<<<<<< HEAD
+=======
+
+*.pyc
+
+\.idea/
+>>>>>>> 2b9b3a086faa8c8950e543c6d92d5340cc8caee9
