@@ -3,6 +3,7 @@ from structs import *
 import json
 import numpy
 from helper import *
+from PoiChooser import *
 
 overwritte = True
 app = Flask(__name__)
@@ -50,6 +51,8 @@ def deserialize_map(serialized_map):
 
     return deserialized_map
 
+poiChooser = PoiChooser()
+
 def bot():
     """
     Main de votre bot.
@@ -72,23 +75,13 @@ def bot():
 
     # Map
     serialized_map = map_json["CustomSerializedMap"]
-    deserialized_map = deserialize_map(serialized_map)
+    deserialized_map = poiChooser.deserialize_data(serialized_map, player, map_json["OtherPlayers"]) #deserialize_map(serialized_map)
 
     global overwritte
     WriteMap(deserialized_map, overwritte)
     overwritte = False
 
     otherPlayers = []
-
-    for player_dict in map_json["OtherPlayers"]:
-        for player_name in player_dict.keys():
-            player_info = player_dict[player_name]
-            p_pos = player_info["Position"]
-            player_info = PlayerInfo(player_info["Health"],
-                                     player_info["MaxHealth"],
-                                     Point(p_pos["X"], p_pos["Y"]))
-
-            otherPlayers.append({player_name: player_info })
 
     # return decision
     return create_move_action(Point(0,1))

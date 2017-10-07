@@ -12,3 +12,7 @@ frank/\.idea/modules\.xml
 frank/\.idea/preferred-vcs\.xml
 
 frank/\.idea/workspace\.xml
+
+*.pyc
+
+\.idea/

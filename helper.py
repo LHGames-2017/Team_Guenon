@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 clear = lambda: os.system('cls')
 
@@ -29,7 +30,7 @@ def WriteMap(deserialized_map, overwritte):
     with open("test" + "Out.txt", "a") as f:
             for x in range(0, sizeX - 1):
                 for y in range(0, sizeY - 1):
-                    print(" " + tab[(x,y)] + " ", end="")
+                    print (" " + tab[(x,y)] + " ", end="")
                     f.write(" " + tab[(x,y)] + " ")
                 print()
                 f.write('\n')
