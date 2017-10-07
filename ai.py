@@ -4,7 +4,7 @@ import json
 import numpy
 from helper import *
 from algoMap import *
-from PoiChooser import *
+from POIChooser import *
 
 cash = 0
 states = ['Home', 'moving', 'mining']
@@ -65,7 +65,7 @@ def deserialize_map(serialized_map):
 
     return deserialized_map
 
-poiChooser = PoiChooser()
+poiChooser = POIChooser()
 
 def bot():
     """
@@ -80,6 +80,7 @@ def bot():
     # test = json.dumps(map_json, indent=3, sort_keys=True)
     print(json.dumps(map_json, indent=3, sort_keys=True))
     p = map_json["Player"]
+    print "player:{}".format(p)
     pos = p["Position"]
     x = pos["X"]
     y = pos["Y"]
@@ -132,4 +133,4 @@ def reponse():
     return bot()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug = True)
