@@ -24,6 +24,7 @@ class POIChooser:
         """
         Fonction utilitaire pour comprendre la map
         """
+        self.player = player
         self.elements_dict[structs.TileContent.Empty] = []
         self.elements_dict[structs.TileContent.Resource] = []
         self.elements_dict[structs.TileContent.Player] = []
@@ -58,16 +59,16 @@ class POIChooser:
         return self.deserialized_map
 
     def compute_cartesian_distance(self, point1, point2):
-        return math.abs(point2[0] - point1[0]) + math.abs(point2[1] - point1[1])
+        return abs(point2[0] - point1[0]) + abs(point2[1] - point1[1])
 
     def compute_coordinate_distance(self, point1, point2):
         return (point2[0] - point1[0], point2[1] - point1[1])
 
-    def computeNextTarget(self):
+    def compute_next_target(self):
         next_target = (0,0)
         min_distance = sys.maxint
         for resource in self.elements_dict[structs.TileContent.Resource]:
-            distance = self.compute_cartesian_distance(self.player.Position, resource)
+            distance = self.compute_cartesian_distance((self.player.Position.X,self.player.Position.Y), resource)
             if distance < min_distance:
                 min_distance = distance
                 next_target = resource
@@ -75,17 +76,28 @@ class POIChooser:
         return next_target
 
     def compute_displacement(self, next_target):
-        self.displacement_stack.clear()
+        # self.displacement_stack.clear()
+        del self.displacement_stack[:]
+        displacement = self.compute_coordinate_distance((self.player.Position.X,self.player.Position.Y), next_target)
 
-        displacement = self.compute_coordinate_distance(self.player.Position, next_target)
+        if displacement[1]:
 
-        direction_y = displacement[1] / math.abs(displacement[1])
-        for y in range(0, math.abs(displacement[1])):
-            self.displacement_stack.append(self.player.Position[0], self.player.Position[1] + direction_y * y)
+            direction_y = displacement[1] / abs(displacement[1])
+            for y in range(1, abs(displacement[1]) + 1):
+                self.displacement_stack.append((self.player.Position.X, self.player.Position.Y + direction_y * y))
 
-        direction_x = displacement[0] / math.abs(displacement[0])
-        for x in range(0, math.abs(displacement[0])):
-            self.displacement_stack.append(self.player.Position[0] + direction_x * x, self.displacement_stack[-1][1])
+        if displacement[0]:
+            direction_x = displacement[0] / abs(displacement[0])
+            for x in range(1, abs(displacement[0]) + 1):
+                if len(self.displacement_stack) == 0:
+                    self.displacement_stack.append((self.player.Position.X + direction_x * x, self.player.Position.Y))
+                else:
+                    self.displacement_stack.append((self.player.Position.X + direction_x * x, self.displacement_stack[-1][1]))
+
+        if len(self.displacement_stack) == 0:
+            return self.player.Position
+
+        return Point(self.displacement_stack[0][0], self.displacement_stack[0][1])
 
 
 

@@ -1,8 +1,21 @@
 from __future__ import print_function
 from implementationPath import *
-# import time
-# import copy
-# import os
+
+def GetAstarPath(fromA, toB, content):
+    diagram = GridWithWeights(len(content[0]), len(content))
+    for y in range(0, len(content)):
+        for x in range(0, len(content[y])):
+            if (content[x][y] == '_' or (toB[0] == x and toB[1] == y)):
+                diagram.weights[(x,y)] = 1
+            elif (content[x][y] == 'W' or content[x][y] == 'H' or content[x][y] == 'L' or content[x][y] == 'S'
+                  or content[x][y] == 'P' or content[x][y] == 'X' or content[x][y] == 'R'):
+                diagram.walls.append((x,y))
+
+    came_from, cost_so_far = a_star_search(diagram, fromA, toB)
+    try:
+        return reconstruct_path(came_from, start=fromA, goal=toB)
+    except:
+        return None
 
 # fileName = "texts\map"
 
@@ -29,22 +42,6 @@ def MakeAndPrintPath(origine):
 
 # contentCopy = copy.deepcopy(content)
 # diagram = GridWithWeights(len(content[0]), len(content))
-
-def GetAstarPath(fromA, toB, content):
-    diagram = GridWithWeights(len(content[0]), len(content))
-    for y in range(0, len(content)):
-        for x in range(0, len(content[y])):
-            if (content[y][x] == '_'):
-                diagram.weights[(x,y)] = 1
-            elif (content[y][x] == 'W' or content[y][x] == 'L' or content[y][x] == 'M' or content[y][x] == 'S' or content[y][x] == '$'
-                  or content[y][x] == 'P' or content[y][x] == 'X'):
-                diagram.walls.append((x,y))
-
-    came_from, cost_so_far = dijkstra_search(diagram, fromA, toB)
-    try:
-        return reconstruct_path(came_from, start=fromA, goal=toB)
-    except:
-        return None
 
 # print('Dijkstra')
 # print()

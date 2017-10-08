@@ -6,14 +6,13 @@ from helper import *
 from algoMap import *
 from POIChooser import *
 
-cash = 0
-states = ['Home', 'moving', 'mining']
-current_state = "Home"
+global current_state
+current_state = "GO-Mining" #states = GO-Home - GO-Mining - Mining - GO-Buying - Buying
 
-# upgrade_priority = {'Backpack': 2000, 'pick-up-speed-1': 15000, 'Defence-1': 15000, 'MaximumHealth-1': 15000,
-#                     'Pick-axe': 40000, 'Shield': 40000, 'Defence-2': 50000, 'CarryingCapacity-1': 15000,
-#                     'CarryingCapacity-2': 50000}
-
+global upgrade_priority #Changer les upgrades/items
+upgrade_priority = ['Backpack', 'pick-up-speed-1', 'Defence-1', 'MaximumHealth-1',
+                    'Pick-axe', 'Shield', 'Defence-2', 'CarryingCapacity-1',
+                    'CarryingCapacity-2']
 overwritte = True
 app = Flask(__name__)
 
@@ -29,8 +28,7 @@ def create_attack_action(target):
 
 def create_collect_action(target, carryingCapacity, carriedResources):
     if carryingCapacity == carriedResources :
-        current_state = 'Home'
-        return
+        current_state = 'GO-Home'
     else:
         current_state = 'Mining'
         return create_action("CollectAction", target)
@@ -41,7 +39,10 @@ def create_steal_action(target):
 def create_heal_action():
     return create_action("HealAction", "")
 
-def create_purchase_action(item):
+def create_purchase_action():
+    current_state = 'GO-mining'
+    item = upgrade_priority[0]
+    upgrade_priority.pop(0)
     return create_action("PurchaseAction", item)
 
 def deserialize_map(serialized_map):
@@ -71,6 +72,7 @@ def bot():
     """
     Main de votre bot.
     """
+    global current_state
     map_json = request.form["map"]
 
     # Player info
@@ -85,45 +87,62 @@ def bot():
     x = pos["X"]
     y = pos["Y"]
     print(x, y)
-    house = p["HouseLocation"]
+    deserialized_house = p["HouseLocation"]
+    house = Point(int(deserialized_house['X']), int(deserialized_house['Y']))
     player = Player(p["Health"], p["MaxHealth"], Point(x,y),
-                    Point(house["X"], house["Y"]), p["Score"],
+                    Point(deserialized_house["X"], deserialized_house["Y"]), p["Score"],
                     p["CarriedResources"], p["CarryingCapacity"])
 
     # Map
     serialized_map = map_json["CustomSerializedMap"]
-    deserialized_map = deserialize_map(serialized_map)
+    deserialized_map = poiChooser.deserialize_data(serialized_map, player, map_json["OtherPlayers"])
     # print(deserialized_map)
 
-    otherPlayers = []
-
-    # for player_dict in map_json["OtherPlayers"]:
-    #     for player_name in player_dict.keys():
-    #         player_info = player_dict[player_name]
-    #         p_pos = player_info["Position"]
-    #         player_info = PlayerInfo(player_info["Health"],
-    #                                  player_info["MaxHealth"],
-    #                                  Point(p_pos["X"], p_pos["Y"]))
-
-    #         otherPlayers.append({player_name: player_info })
-
-    deserialized_map = poiChooser.deserialize_data(serialized_map, player, map_json["OtherPlayers"]) #deserialize_map(serialized_map)
-
-    if current_state == 'Home' or current_state == 'Moving':
-        target = player.Position #TODO = WANTED POSITION
-        create_move_action(target)
-    elif current_state == 'Mining':
-        create_collect_action(player.Position, player.CarryingCapacity, player.CarriedRessources)
-
-    otherPlayers = []
-    
     global overwritte
     mapContent = WriteMap(deserialized_map, overwritte)
     overwritte = False
 
-    path = GetAstarPath((x,y), (x-5,y+5), mapContent)
-    # return decision
-    return create_move_action(Point(path[1][0], path[1][1]))
+    target = Point(0,0)
+    if player.CarriedRessources == player.CarryingCapacity:
+        current_state = "GO-Home"
+
+    if current_state == 'GO-Home':
+        position = house  # position de la maison  # mining - fonction de nick et julien
+        if not position == player.Position and poiChooser.compute_cartesian_distance((position.X, position.Y), (player.Position.X, player.Position.Y)) != 0:
+            path = GetAstarPath((x, y), (position.X, position.Y), mapContent)
+            target = Point(path[1][0], path[1][1])
+            return create_move_action(target)
+        else:
+            current_state = 'GO-Mining'
+            # check si assez argent pour get items
+
+    elif current_state == 'GO-Mining':
+        position = poiChooser.compute_next_target()  # mining - fonction de nick et julien
+        if poiChooser.compute_cartesian_distance(position, (player.Position.X, player.Position.Y)) != 1:
+            path = GetAstarPath((x, y), position, mapContent)
+            target = Point(path[1][0], path[1][1])
+            return create_move_action(target)
+        else:
+            current_state = 'Mining'
+
+    elif current_state == 'GO-Buying':
+        position = None  # positon du shop  # mining - fonction de nick et julien
+        if not position == player.Position:
+            path = GetAstarPath((x, y), position, mapContent)
+            target = Point(path[1][0], path[1][1])
+            return create_move_action(target)
+        else:
+            current_state = 'Buying'
+
+    elif current_state == 'Mining':
+        target = poiChooser.compute_next_target()
+        return create_collect_action(Point(target[0], target[1]), player.CarryingCapacity, player.CarriedRessources)
+
+    if current_state == 'Buying':
+        return create_purchase_action()
+
+    # path = GetAstarPath((x,y), target, mapContent)
+    # return create_move_action(Point(path[1][0], path[1][1]))
 
 @app.route("/", methods=["POST"])
 def reponse():
