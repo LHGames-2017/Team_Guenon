@@ -30,18 +30,21 @@ def WriteMap(deserialized_map, overwritte):
                         tab[X][Y] = 'P'
             except:
                 pass
-
-    if overwritte: open("test" + "Out.txt", "w")
-    with open("test" + "Out.txt", "a") as f:
-        for y in range(0, sizeY - 1):
-            for x in range(0, sizeX - 1):
-                print(" " + tab[x][y] + " ", end="")
-                f.write(" " + tab[x][y] + " ")
-            print()
-            f.write('\n')
-        print()
-        print()
-        f.write('\n')
-        f.write('\n')
+        # for y in range(0, sizeY - 1):
+        #     for x in range(0, sizeX - 1):
+        #         print(" " + tab[x][y] + " ", end="")
+        #     print()
+    # if overwritte: open("test" + "Out.txt", "w")
+    # with open("test" + "Out.txt", "a") as f:
+    #     for y in range(0, sizeY - 1):
+    #         for x in range(0, sizeX - 1):
+    #             print(" " + tab[x][y] + " ", end="")
+    #             f.write(" " + tab[x][y] + " ")
+    #         print()
+    #         f.write('\n')
+    #     print()
+    #     print()
+    #     f.write('\n')
+    #     f.write('\n')
     
     return tab
